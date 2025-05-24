@@ -76,12 +76,4 @@ curl http://127.0.0.1:5000/sync-posts
 curl http://127.0.0.1:5000/posts
 ```
 
-## Recommended Enhancements
 
-1. **Cache Expiry**: Invalidate and refresh cache entries older than a set duration (e.g., 1 hour) by comparing `fetched_at` timestamps in `fetch_external()`.
-2. **OpenAPI / Swagger Documentation**: Integrate `flask-restx` to generate interactive Swagger UI at `/` showing all endpoints, models, and schemas.
-3. **Generic Sync Endpoint**: Create a parameterized `/sync` route (e.g., `/sync?url=<URL>&table=<TABLE>&mapping=<JSON>`) to support dynamic synchronization for different JSON structures and tables.
-
----
-
-*This document summarizes the usage and key features of the Simple API project.*
