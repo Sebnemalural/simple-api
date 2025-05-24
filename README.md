@@ -1,48 +1,54 @@
 # Simple API Documentation
 
-Bu proje, JSONPlaceholder gibi herkese açık JSON API’lerinden veri çekip SQLite veritabanına yazan ve proxy olarak kullanan basit bir Flask servistir.
+This project is a simple Flask service that fetches data from public JSON APIs (e.g., JSONPlaceholder), caches the responses in SQLite, and provides both a proxy and data synchronization functionality.
 
-## Gereksinimler
+## Requirements
 
 * Python 3.10+
-* Paketler (requirements.txt içinde):
+* Packages (listed in `requirements.txt`):
 
   * Flask
   * requests
+  * flask-restx
 
-## Kurulum
+## Installation
 
 ```bash
-git clone <repo-url>
+# Clone the repository
+git clone <your-repo-url>
 cd simple-api
+
+# Create and activate a virtual environment
 python -m venv venv
 # Windows
 venv\Scripts\activate
 # macOS/Linux
 source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-## Veritabanı
+## Database
 
-Uygulama `data.db` adında SQLite dosyası oluşturur ve iki temel tablo barındırır:
+On first run, the application creates a SQLite database file named `data.db` with two tables:
 
-* `cache`: Dış API yanıtlarını geçici saklama
-* `api_posts`: JSONPlaceholder’dan çekilen `posts` verisi
+* **cache**: Temporarily stores external API JSON responses
+* **api\_posts**: Holds `posts` data fetched from JSONPlaceholder
 
-Uygulama ilk çalıştırıldığında tablolar `init_db()` fonksiyonuyla otomatik oluşturulur.
+Both tables are initialized automatically by the `init_db()` function when the server starts.
 
-## Mevcut Endpoint’ler
+## Available Endpoints
 
-| Yol                  | Metot | Açıklama                                                               |
-| -------------------- | ----- | ---------------------------------------------------------------------- |
-| `/`                  | GET   | Mevcut route’ları listeler                                             |
-| `/health`            | GET   | Servisin durumunu kontrol eder (`OK`)                                  |
-| `/api/proxy?url=...` | GET   | Verilen URL’den JSON çeker ve cache’ler                                |
-| `/sync-posts`        | GET   | JSONPlaceholder’dan tüm post’ları çeker ve `api_posts` tablosuna yazar |
-| `/posts`             | GET   | `api_posts` tablosundaki tüm kayıtları döner                           |
+| Route                  | Method | Description                                                             |
+| ---------------------- | ------ | ----------------------------------------------------------------------- |
+| `/`                    | GET    | Lists all available routes                                              |
+| `/health`              | GET    | Returns server status (`{ "status": "OK" }`)                            |
+| `/api/proxy?url=<URL>` | GET    | Proxies and caches JSON from the provided URL                           |
+| `/sync-posts`          | GET    | Fetches all `posts` from JSONPlaceholder and writes them to `api_posts` |
+| `/posts`               | GET    | Returns all records from the `api_posts` table                          |
 
-### Kullanım Örnekleri
+### Usage Examples
 
 #### Health Check
 
@@ -51,31 +57,31 @@ curl http://127.0.0.1:5000/health
 # => {"status":"OK"}
 ```
 
-#### Proxy Kullanımı
+#### Proxy Example
 
 ```bash
 curl "http://127.0.0.1:5000/api/proxy?url=https://jsonplaceholder.typicode.com/posts/1"
 ```
 
-#### Senkronizasyon
+#### Sync Posts
 
 ```bash
 curl http://127.0.0.1:5000/sync-posts
 # => {"status":"synced","count":100}
 ```
 
-#### Verileri Listeleme
+#### List Posts
 
 ```bash
 curl http://127.0.0.1:5000/posts
 ```
 
-## Önerilen İyileştirmeler
+## Recommended Enhancements
 
-1. **Cache Expiry**: `cache` tablosundaki verilerin belirli bir süre sonra (örn. 1 saat) yeniden fetch edilmesi.
-2. **OpenAPI / Swagger Dokümantasyonu**: `flask-swagger` veya `flask-restx` ile otomatik API dokümantasyonu.
-3. **Genel Sync Mekanizması**: `/sync?url=<URL>&table=<TABLO>&mapping=<JSON>` gibi parametreli bir endpoint.
+1. **Cache Expiry**: Invalidate and refresh cache entries older than a set duration (e.g., 1 hour) by comparing `fetched_at` timestamps in `fetch_external()`.
+2. **OpenAPI / Swagger Documentation**: Integrate `flask-restx` to generate interactive Swagger UI at `/` showing all endpoints, models, and schemas.
+3. **Generic Sync Endpoint**: Create a parameterized `/sync` route (e.g., `/sync?url=<URL>&table=<TABLE>&mapping=<JSON>`) to support dynamic synchronization for different JSON structures and tables.
 
 ---
 
-*Bu doküman, projenin kullanımını ve temel özelliklerini özetler.*
+*This document summarizes the usage and key features of the Simple API project.*
