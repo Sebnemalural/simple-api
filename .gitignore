@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+.env
+
+# SQLite database
+data.db
+
+# SQLite tools
+*.exe
+*.dll
+
+# Python cache
+__pycache__/
